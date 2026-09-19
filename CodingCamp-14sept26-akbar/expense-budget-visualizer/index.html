@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense &amp; Budget Visualizer</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Chart.js 4 via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <h1 class="logo">
+        <span class="logo-icon">💰</span>
+        <span>Budget Visualizer</span>
+      </h1>
+      <button
+        id="theme-toggle"
+        class="btn btn-icon"
+        aria-label="Toggle dark/light mode"
+        title="Toggle theme"
+      >
+        <span id="theme-icon">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Storage unavailability banner — shown only when LocalStorage is inaccessible -->
+  <div id="storage-banner" class="storage-banner hidden" role="alert" aria-live="polite">
+    <span>⚠ Storage unavailable — data will not be saved.</span>
+    <button
+      id="storage-banner-dismiss"
+      class="btn btn-icon storage-banner-close"
+      aria-label="Dismiss storage warning"
+      type="button"
+    >✕</button>
+  </div>
+
+  <main class="main-layout">
+
+    <!-- ===== LEFT COLUMN ===== -->
+    <div class="col-left">
+
+      <!-- Balance Card -->
+      <section id="balance-card" class="card balance-card" aria-label="Total balance">
+        <p class="balance-label">Total Spent</p>
+        <p id="balance-amount" class="balance-amount">$0.00</p>
+        <p id="limit-status" class="limit-status hidden"></p>
+      </section>
+
+      <!-- Add Transaction Form -->
+      <section class="card form-card">
+        <h2 class="card-title">Add Transaction</h2>
+        <form id="transaction-form" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="item-name">Item Name</label>
+              <input
+                type="text"
+                id="item-name"
+                name="item-name"
+                placeholder="e.g. Coffee"
+                maxlength="100"
+                autocomplete="off"
+              />
+            </div>
+            <div class="form-group">
+              <label for="item-amount">Amount</label>
+              <input
+                type="number"
+                id="item-amount"
+                name="item-amount"
+                placeholder="0.00"
+                min="0.01"
+                max="999999999.99"
+                step="0.01"
+              />
+            </div>
+            <div class="form-group">
+              <label for="item-category">Category</label>
+              <select id="item-category" name="item-category">
+                <!-- populated by JS -->
+              </select>
+            </div>
+          </div>
+          <p id="form-error" class="field-error hidden"></p>
+          <button type="submit" class="btn btn-primary btn-full">Add Transaction</button>
+        </form>
+      </section>
+
+      <!-- Settings Card -->
+      <section id="category-manager" class="card settings-card">
+        <h2 class="card-title">Settings</h2>
+        <div class="settings-row">
+          <div class="settings-group">
+            <label for="custom-category">Add Custom Category</label>
+            <div class="input-inline">
+              <input
+                type="text"
+                id="custom-category"
+                placeholder="e.g. Health"
+                autocomplete="off"
+              />
+              <button id="add-category-btn" class="btn btn-secondary" type="button">Add</button>
+            </div>
+            <p id="category-error" class="field-error hidden"></p>
+          </div>
+          <div id="limit-form" class="settings-group">
+            <label for="spending-limit">Spending Limit</label>
+            <div class="input-inline">
+              <input
+                type="number"
+                id="spending-limit"
+                placeholder="0.00"
+                min="0.01"
+                step="0.01"
+              />
+              <button id="save-limit-btn" class="btn btn-secondary" type="button">Save</button>
+            </div>
+            <p id="limit-error" class="field-error hidden"></p>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /col-left -->
+
+    <!-- ===== RIGHT COLUMN ===== -->
+    <div class="col-right">
+
+      <!-- Chart Card -->
+      <section class="card chart-card" aria-label="Spending chart">
+        <h2 class="card-title">Spending by Category</h2>
+        <div class="chart-wrapper">
+          <canvas id="spending-chart" aria-label="Pie chart of spending by category" role="img"></canvas>
+          <p id="chart-empty" class="chart-empty hidden">No data yet — add a transaction to see the chart.</p>
+        </div>
+      </section>
+
+      <!-- Transaction List Card -->
+      <section class="card list-card" aria-label="Transaction history">
+        <div class="list-header">
+          <h2 class="card-title">Transactions</h2>
+          <div id="sort-controls" class="sort-controls">
+            <label for="sort-select" class="sr-only">Sort by</label>
+            <select id="sort-select" aria-label="Sort transactions">
+              <option value="date_desc">Latest First</option>
+              <option value="date_asc">Oldest First</option>
+              <option value="amount_desc">Amount ↓</option>
+              <option value="amount_asc">Amount ↑</option>
+              <option value="category">Category A–Z</option>
+            </select>
+          </div>
+        </div>
+
+        <p id="delete-error" class="field-error hidden" role="alert"></p>
+
+        <ul id="transaction-list" class="transaction-list" role="list">
+          <!-- populated by JS -->
+        </ul>
+
+        <p id="list-empty" class="list-empty hidden">
+          No transactions yet. Add one above!
+        </p>
+      </section>
+
+    </div><!-- /col-right -->
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Expense &amp; Budget Visualizer — data stored locally in your browser</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
